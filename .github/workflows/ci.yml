@@ -95,15 +95,18 @@ jobs:
         run: npm run test -- --coverage
 
       # 2. Tests d'Intégration (E2E)
-      # On injecte les variables d'env pour se connecter au Service Postgres ci-dessus
       - name: 🔗 Integration Tests (E2E)
-        run: npm run test:e2e
+        # On définit les variables d'environnement spécifiquement pour cette étape
         env:
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5432
-          DATABASE_USER: test_user
-          DATABASE_PASSWORD: test_password
-          DATABASE_NAME: test_db
+          # On reconstruit l'URL avec les infos du service 'postgres' défini plus haut dans le YAML
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db?schema=public
+          JWT_SECRET: 'secret_temporaire_pour_les_tests'
+        run: |
+          # 1. On crée les tables dans la base de données de test (Pre-requis !)
+          npx prisma db push --accept-data-loss
+
+          # 2. On lance les tests
+          npm run test:e2e
 
       # 3. Contract Testing (Pact)
       # Note: Ne s'exécute que si le script existe dans package.json
