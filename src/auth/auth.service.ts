@@ -33,7 +33,8 @@ export class AuthService {
     });
 
     // On ne renvoie jamais le mot de passe !
-    const { password, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...result } = user;
     return result;
   }
 

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -24,21 +26,26 @@ describe('AuthController', () => {
   });
 
   it('login devrait retourner un token', async () => {
-    // On envoie un objet qui ressemble à LoginDto
-    const loginDto = { email: 'a@a.com', password: '123' };
+    // On utilise le vrai type LoginDto
+    const loginDto: LoginDto = { email: 'a@a.com', password: '123' };
 
-    const result = await controller.login(loginDto as any);
+    // Plus besoin de "as any" !
+    const result = await controller.login(loginDto);
 
     expect(result).toEqual({ access_token: 'token' });
-    // On vérifie que le service a été appelé avec le bon objet
     expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
   });
 
   it('register devrait créer un user', async () => {
-    const dto = { email: 'test@test.com', password: '123', name: 'Bob' };
+    // On utilise le vrai type CreateUserDto
+    const dto: CreateUserDto = {
+      email: 'test@test.com',
+      password: '123',
+      // J'ai retiré 'name' car il n'est pas dans ton DTO
+    };
 
-    // Maintenant cette méthode existe dans le contrôleur !
-    await controller.register(dto as any);
+    // Plus besoin de "as any"
+    await controller.register(dto);
 
     expect(mockAuthService.register).toHaveBeenCalledWith(dto);
   });

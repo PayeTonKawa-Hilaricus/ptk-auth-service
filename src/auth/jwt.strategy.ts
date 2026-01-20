@@ -2,19 +2,29 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
+// 1. Définis l'interface (adapte selon ce que tu mets dans ton token)
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: string;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey:
-        process.env.JWT_SECRET || 'SUPER_SECRET_KEY_A_CHANGER_DANS_ENV',
+      secretOrKey: process.env.JWT_SECRET || 'secret',
     });
   }
 
-  async validate(payload: any) {
-    // Ce que tu retournes ici sera injecté dans `request.user`
-    return { userId: payload.sub, email: payload.email, role: payload.role };
+  // 2. Validate le token et retourne les infos utilisateur
+  validate(payload: JwtPayload) {
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      role: payload.role,
+    };
   }
 }
