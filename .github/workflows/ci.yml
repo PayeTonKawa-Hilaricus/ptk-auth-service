@@ -180,7 +180,7 @@ jobs:
       - name: 🔄 Update & Restart Service
         shell: powershell
         run: |
-          # Correction de l'affichage des caracteres speciaux
+          # Correction de l'affichage
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
           # --- CONFIGURATION ---
@@ -201,7 +201,7 @@ jobs:
           cd $INFRA_DIR
           git pull origin main
 
-          # 3. Generation du .env (CORRECTION ENCODAGE ASCII)
+          # 3. Generation du .env (ASCII FORCE)
           Write-Host "🔑 Generation des secrets..."
 
           # On supprime l'ancien fichier s'il existe
@@ -235,12 +235,12 @@ jobs:
              $EnvContent += "PORT=3000"
           }
 
-          # ECRITURE DU FICHIER EN ASCII FORCE - C est la cle du fix
+          # ECRITURE DU FICHIER EN ASCII
           $EnvContent | Out-File -FilePath .env -Encoding ascii
 
           # 4. Relancer le conteneur
           Write-Host "🐳 Redemarrage du conteneur..."
-          # Note : Utilisation de 'docker compose' avec espace
+          # Note : Utilisation de docker compose avec espace (SANS GUILLEMETS)
           docker compose up -d --build --no-deps $SERVICE_NAME
 
           # 5. Nettoyage
